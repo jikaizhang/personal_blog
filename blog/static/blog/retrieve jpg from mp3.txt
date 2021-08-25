@@ -1,0 +1,8 @@
+Note, to retrieve all jpg from mp3, change to the directory containing the mp3 files, and 
+run the following command
+
+for %i in (*.mp3) do ffmpeg -i "%i" "%~ni.jpg"
+
+May need to install ffmpeg on Windows, use chocolatey, references below:
+https://video.stackexchange.com/questions/20495/how-do-i-set-up-and-use-ffmpeg-in-windows
+https://stackoverflow.com/questions/55600258/fix-chocolatey-access-is-denied

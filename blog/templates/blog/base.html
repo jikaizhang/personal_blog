@@ -1,0 +1,357 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- website icon -->
+    <link rel="icon" href="{% static 'blog/images/logo.jpg' %}">
+    <!-- music icons -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/style.css' %}">
+
+    {% if title %}
+      <title>Jikai's Blog - {{ title }}</title>
+    {% else %}
+      <title>Jikai's Blog</title>
+    {% endif %}
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="{% url 'blog-home' %}">Jikai's Blog</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="{% url 'blog-home' %}">Home</a>
+              <a class="nav-item nav-link" href="{% url 'blog-contact' %}">Contact</a>
+            </div>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+              <!-- a user is logged in -->
+              {% if user.is_authenticated %}
+                <a class="nav-item nav-link" href="{% url 'post-create' %}">New Post</a>
+                <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+                <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+              {% else %}
+                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <!-- display the flash message in views -->
+          {% if messages %}
+            {% for message in messages %}
+              <!-- grab the message tag (success, info, danger, etc.) -->
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          {% block content %}{% endblock %}
+        </div>
+        <div class="col-md-4">
+          <!-- <div class="content-section">
+            <h3>Our Sidebar</h3>
+            <p class='text-muted'>You can put any information here you'd like.
+              <ul class="list-group">
+                <li class="list-group-item list-group-item-light">Latest Posts</li>
+                <li class="list-group-item list-group-item-light">Announcements</li>
+                <li class="list-group-item list-group-item-light">Calendars</li>
+                <li class="list-group-item list-group-item-light">etc</li>
+              </ul>
+            </p>
+          </div> -->
+
+          <div class="player">
+            <div class="main">
+        			<audio></audio>
+        			<div class="thumbnail">
+        				<img src="{% static 'blog/music/cover/Fade Into You.jpg' %}">
+        			</div>
+        			<div class="seekbar">
+        				<input type="range">
+        			</div>
+        			<div class="controls">
+                <div class="details">
+          				<h2>Songname</h2>
+          				<p>Artistname</p>
+          			</div>
+                <div class="repeat-random-control">
+                  <i class="fa fa-repeat"></i>
+                  <i class="fa fa-random"></i>
+                </div>
+        				<div class="prev-control">
+        					<i class="fa fa-backward"></i>
+        				</div>
+        				<div class="play-pause-control paused">
+        					<i class="fa fa-play"></i>
+        					<i class="fa fa-pause"></i>
+        				</div>
+        				<div class="next-control">
+        					<i class="fa fa-forward"></i>
+        				</div>
+                <div class="volume-control">
+                  <input class="vol-control" type="range" min="0" max="100" step="1"></input>
+                  <i class="fa fa-volume-up"></i>
+
+                </div>
+        			</div>
+        		</div>
+        		<div class="player-list">
+        			<div class="toggle-list">
+        				<i class="fa fa-angle-up"></i>
+        				<i class="fa fa-angle-down"></i>
+        			</div>
+        			<div class="list">
+                <div class="item">
+                  <div class="thumbnail">
+                    <img src="{% static 'blog/music/cover/Fade Into You.jpg' %}">
+                  </div>
+                  <div class="details">
+                    <h2>Songname</h2>
+                    <p>Artistname</p>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="thumbnail">
+                    <img src="{% static 'blog/music/cover/Fade Into You.jpg' %}">
+                  </div>
+                  <div class="details">
+                    <h2>Songname</h2>
+                    <p>Artistname</p>
+                  </div>
+                </div>
+        			</div>
+        		</div>
+            <!-- TODO: static url not working in .js files -->
+            <script>
+              // use session storage to retrieve the song playing before loading
+              var currentSongIndex = sessionStorage.getItem('currentSongIndex');
+              if (null === currentSongIndex) {
+                currentSongIndex = 0;
+                sessionStorage.setItem("currentSongIndex", 0);
+              }
+              // save the current song to session storage
+              window.onbeforeunload = function() {
+                if (currentSongIndex !== null) {
+                    sessionStorage.setItem("currentSongIndex", currentSongIndex);
+                } else {
+                    currentSongIndex = 0;
+                    sessionStorage.setItem("currentSongIndex", 0);
+                }
+              }
+
+              function _(query) {
+                return document.querySelector(query);
+              }
+
+              function _all(query) {
+                return document.querySelectorAll(query);
+              }
+              let songList = [{
+                    "thumbnail": "Fade Into You.jpg",
+                    "audio": "Fade Into You.mp3",
+                    "songname": "Fade Into You",
+                    "artistname": "Mazzy Star"
+                },
+                {
+                    "thumbnail": "Genesis.jpg",
+                    "audio": "Genesis.mp3",
+                    "songname": "Genesis",
+                    "artistname": "Grimes"
+                },
+                {
+                    "thumbnail": "In My Life.jpg",
+                    "audio": "In My Life.mp3",
+                    "songname": "In My Life",
+                    "artistname": "The Beatles"
+                },
+                {
+                    "thumbnail": "Intro.jpg",
+                    "audio": "Intro.mp3",
+                    "songname": "Intro",
+                    "artistname": "The xx"
+                },
+                {
+                    "thumbnail": "Kyoto.jpg",
+                    "audio": "Kyoto.mp3",
+                    "songname": "Kyoto",
+                    "artistname": "Phoebe Bridgers"
+                },
+                {
+                    "thumbnail": "Seasons(Waiting on You).jpg",
+                    "audio": "Seasons(Waiting on You).mp3",
+                    "songname": "Seasons(Waiting on You)",
+                    "artistname": "Future Islands"
+                }
+              ];
+
+              let player = _(".player"),
+                toggleSongList = _(".player .toggle-list");
+
+              let main = {
+                audio: _(".player .main audio"),
+                thumbnail: _(".player .main img"),
+                seekbar: _(".player .main input"),
+                songname: _(".player .main .details h2"),
+                artistname: _(".player .main .details p"),
+                prevControl: _(".player .main .controls .prev-control"),
+                playPauseControl: _(".player .main .controls .play-pause-control"),
+                nextControl: _(".player .main .controls .next-control"),
+                repeatRandomControl: _(".player .main .controls .repeat-random-control"),
+                volumeControl: _(".player .main .controls .volume-control")
+              }
+
+              toggleSongList.addEventListener("click", function() {
+                toggleSongList.classList.toggle("active");
+                player.classList.toggle("activeSongList");
+              });
+
+              _(".player .player-list .list").innerHTML = (songList.map(function(song, songIndex) {
+                return `
+                  <div class="item" songIndex="${songIndex}">
+                    <div class="thumbnail">
+                      <img src="{% static 'blog/music/cover/' %}${song.thumbnail}">
+                    </div>
+                    <div class="details">
+                      <h2>${song.songname}</h2>
+                      <p>${song.artistname}</p>
+                    </div>
+                  </div>
+                `;
+              }).join(""));
+
+              let songListItems = _all(".player .player-list .list .item");
+              for (let i = 0; i < songListItems.length; i++) {
+                songListItems[i].addEventListener("click", function() {
+                    currentSongIndex = parseInt(songListItems[i].getAttribute("songIndex"));
+                    loadSong(currentSongIndex);
+                    player.classList.remove("activeSongList");
+                });
+              }
+
+              function loadSong(songIndex) {
+                let song = songList[songIndex];
+                for (let i = 0; i < songListItems.length; i++) {
+                  songListItems[i].classList.remove("current");
+                }
+                _("div[songindex='"+songIndex+"']").classList.add("current");
+                main.thumbnail.setAttribute("src", "{% static 'blog/music/cover/' %}" + song.thumbnail);
+                document.body.style.background = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url("{% static 'blog/music/cover/' %}${song.thumbnail}") center no-repeat`;
+                document.body.style.backgroundSize = "cover";
+                main.songname.innerText = song.songname;
+                main.artistname.innerText = song.artistname;
+                main.audio.setAttribute("src", "{% static 'blog/music/audio/' %}" + song.audio);
+                main.seekbar.setAttribute("value", 0);
+                main.seekbar.setAttribute("min", 0);
+                main.seekbar.setAttribute("max", 0);
+                main.audio.addEventListener("canplay", function() {
+                    main.audio.play();
+                    if (!main.audio.paused) {
+                        main.playPauseControl.classList.remove("paused");
+                    }
+                    main.seekbar.setAttribute("max", parseInt(main.audio.duration));
+                    main.audio.onended = function() {
+                        main.nextControl.click();
+                    }
+                });
+                let setVolume = function(){
+                  main.audio.volume = this.value / 100;
+                };
+                main.volumeControl.getElementsByClassName('vol-control')[0].addEventListener('change', setVolume);
+                main.volumeControl.getElementsByClassName('vol-control')[0].addEventListener('input', setVolume);
+              }
+              setInterval(function() {
+                main.seekbar.value = parseInt(main.audio.currentTime);
+              }, 1000);
+
+              main.prevControl.addEventListener("click", function() {
+                if (main.repeatRandomControl.classList.contains("random")) {
+                  var exclude = currentSongIndex;
+                  while (currentSongIndex === exclude) {
+                    currentSongIndex = Math.floor(Math.random() * songList.length);
+                  }
+                }
+                else {
+                  currentSongIndex--;
+                  if (currentSongIndex < 0) {
+                      currentSongIndex = songList.length + currentSongIndex;
+                  }
+                }
+                loadSong(currentSongIndex);
+              });
+              main.nextControl.addEventListener("click", function() {
+                if (main.repeatRandomControl.classList.contains("random")) {
+                  var exclude = currentSongIndex;
+                  while (currentSongIndex === exclude) {
+                    currentSongIndex = Math.floor(Math.random() * songList.length);
+                  }
+                }
+                else {
+                  currentSongIndex = (currentSongIndex + 1) % songList.length;
+                }
+                loadSong(currentSongIndex);
+              });
+              main.playPauseControl.addEventListener("click", function() {
+                if (main.audio.paused) {
+                    main.playPauseControl.classList.remove("paused");
+                    main.audio.play();
+                }
+                else {
+                    main.playPauseControl.classList.add("paused");
+                    main.audio.pause();
+                }
+              });
+              main.repeatRandomControl.addEventListener("click", function() {
+                if (main.repeatRandomControl.classList.contains("random")) {
+                    main.repeatRandomControl.classList.remove("random");
+                    currentSongIndex = (currentSongIndex + 1) % songList.length;
+                }
+                else {
+                    main.repeatRandomControl.classList.add("random");
+                    var exclude = currentSongIndex;
+                    while (currentSongIndex === exclude) {
+                      currentSongIndex = Math.floor(Math.random() * songList.length);
+                    }
+                }
+                loadSong(currentSongIndex);
+              });
+              main.seekbar.addEventListener("change", function() {
+                console.log(main.audio.currentTime);
+                main.audio.currentTime = main.seekbar.value;
+                console.log("seekbar");
+                console.log(main.seekbar.value);
+                console.log(main.audio.currentTime);
+              });
+              loadSong(currentSongIndex);
+            </script>
+        	</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script type="text/javascript" src="{% static 'blog/script.js' %}"></script> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

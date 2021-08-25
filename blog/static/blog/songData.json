@@ -1,0 +1,38 @@
+[
+    {
+        "thumbnail": "Fade Into You.jpg",
+        "audio": "Fade Into You.mp3",
+        "songname": "Fade Into You",
+        "artistname": "Mazzy Star"
+    },
+    {
+        "thumbnail": "Genesis.jpg",
+        "audio": "Genesis.mp3",
+        "songname": "Genesis",
+        "artistname": "Grimes"
+    },
+    {
+        "thumbnail": "In My Life.jpg",
+        "audio": "In My Life.mp3",
+        "songname": "In My Life",
+        "artistname": "The Beatles"
+    },
+    {
+        "thumbnail": "Intro.jpg",
+        "audio": "Intro.mp3",
+        "songname": "Intro",
+        "artistname": "The xx"
+    },
+    {
+        "thumbnail": "Kyoto.jpg",
+        "audio": "Kyoto.mp3",
+        "songname": "Kyoto",
+        "artistname": "Phoebe Bridgers"
+    },
+    {
+        "thumbnail": "Seasons(Waiting on You).jpg",
+        "audio": "Seasons(Waiting on You).mp3",
+        "songname": "Seasons(Waiting on You)",
+        "artistname": "Future Islands"
+    }
+]
